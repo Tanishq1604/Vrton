@@ -1,3 +1,4 @@
+// App.jsx
 import { Canvas } from '@react-three/fiber'
 import Lobby from './Lobby'
 import { AvatarCreator } from '@readyplayerme/react-avatar-creator'
@@ -7,6 +8,7 @@ import { generateRandomHexColor, getRandomExpression, getStoreValue } from './ut
 import OpenMapExperience from './components/OpenMapExperience'
 import { UI } from './components/UI/UI'
 import { Loading } from './components/UI/Loading'
+import { Physics } from '@react-three/rapier' // Import Physics component
 
 export default function App() {
   const [avatarMode, setAvatarMode] = useState(false)
@@ -14,17 +16,14 @@ export default function App() {
   const [experienceReady, setExperienceReady] = useState(false)
 
   if (!avatarMode && !gameLaunched) {
-    // home page
     return (
       <Lobby
         onJoinOrCreateRoom={roomCode => {
-          // setRoomCode(roomCode)
           setAvatarMode(true)
         }}
       />
     )
   } else if (!gameLaunched && avatarMode) {
-    // show avatar creator
     return (
       <AvatarCreator
         subdomain='playroom'
@@ -32,16 +31,15 @@ export default function App() {
         onAvatarExported={event => {
           const avatarUrl = event.data.url
           const avatarImage = `https://models.readyplayer.me/${event.data.avatarId}.png?expression=${getRandomExpression()}&size=512`
-          // join or create the room now.
+
           insertCoin({
-            skipLobby: true, // skip the lobby UI and join/create the room directly
+            skipLobby: true,
           }).then(() => {
             myPlayer().setState('character', {
               id: myPlayer().id,
               hairColor: generateRandomHexColor(),
               topColor: generateRandomHexColor(),
               bottomColor: generateRandomHexColor(),
-              // set the avatar url and add a timestamp to it to avoid caching
               avatarUrl: avatarUrl.split('?')[0] + '?' + new Date().getTime() + '&meshLod=2',
               avatarImg: avatarImage,
             })
@@ -54,13 +52,14 @@ export default function App() {
       />
     )
   } else if (gameLaunched) {
-    // show the game
     return (
       <>
         <Loading show={!experienceReady} />
         <Canvas shadows camera={{ position: [8, 8, 8], fov: 30 }}>
-          <color attach='background' args={['#ececec']} />
-          <OpenMapExperience onReady={setExperienceReady} />
+          {/* <color attach='background' args={['#ececec']} /> */}
+          <Physics>
+            <OpenMapExperience onReady={setExperienceReady} />
+          </Physics>
         </Canvas>
         {experienceReady && <UI />}
       </>

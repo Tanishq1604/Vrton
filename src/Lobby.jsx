@@ -1,4 +1,4 @@
-import imgLogo from './assets/logo-rr.svg'
+import imgLogo from './assets/tonHunt.png'
 import imgReadyPlayerMe from './assets/bottom-logo.svg'
 import { useState } from 'react'
 import { generateRandomGuestName, getHashValue, getStoreValue, setHashValue, setStoreValue } from './utils/helpers'

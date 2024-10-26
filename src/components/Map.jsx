@@ -22,20 +22,20 @@ const GroundSensor = ({ callback }) => {
   const [initialized, setInitialized] = useState(false)
 
   useEffect(() => {
-    initialized && callback()
-  }, [initialized])
+    if (initialized && typeof callback === 'function') {
+      callback()
+    }
+  }, [initialized, callback])
 
   return (
-    <>
-      <RigidBody gravityScale={0}>
-        <CuboidCollider
-          args={[5, 5, 1]}
-          sensor
-          onIntersectionEnter={() => {
-            setInitialized(true)
-          }}
-        />
-      </RigidBody>
-    </>
+    <RigidBody gravityScale={0}>
+      <CuboidCollider
+        args={[5, 5, 1]}
+        sensor
+        onIntersectionEnter={() => {
+          setInitialized(true)
+        }}
+      />
+    </RigidBody>
   )
 }
